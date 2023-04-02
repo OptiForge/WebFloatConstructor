@@ -1,0 +1,180 @@
+<html>
+<head>
+<style>
+body {
+	font-family:Verdana,sans-serif;font-size:12px;
+	text-align:center;
+	background-color: #3b3b3b;
+	color:#f4f4f4;
+	width:600px;
+	margin-left:auto;
+	margin-right:auto;
+	}
+.row {
+  display: flex;
+}
+
+.column {
+  flex: 50%;
+}
+
+a:link {
+    text-decoration: none;
+	color:#f4f4f4;
+}
+
+a:visited {
+    text-decoration: none;
+	color:#f4f4f4;
+}
+
+a:hover {
+    text-decoration: underline;
+	color:#f4f4f4;
+}
+
+a:active {
+    text-decoration: underline;
+	color:#f4f4f4;
+}
+.banner {
+	height:30px;
+	width:100%;
+	position: relative;
+	background: -moz-linear-gradient(270deg, rgba(46,46,46,1) 0%, rgba(117,117,117,1) 100%); /* ff3.6+ */
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, rgba(46,46,46,1)), color-stop(100%, rgba(117,117,117,1))); /* safari4+,chrome */
+	background: -webkit-linear-gradient(270deg, rgba(46,46,46,1) 0%, rgba(117,117,117,1) 100%); /* safari5.1+,chrome10+ */
+	background: -o-linear-gradient(270deg, rgba(46,46,46,1) 0%, rgba(117,117,117,1) 100%); /* opera 11.10+ */
+	background: -ms-linear-gradient(270deg, rgba(46,46,46,1) 0%, rgba(117,117,117,1) 100%); /* ie10+ */
+	background: linear-gradient(180deg, rgba(46,46,46,1) 0%, rgba(117,117,117,1) 100%); /* w3c */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#2E2E2E', endColorstr='#757575',GradientType=0 ); /* ie6-9 */
+	}
+.banner-contents {
+	position: absolute;
+    top: 27%;
+	text-align:center;
+	width:100%;
+	height:100%;
+	}
+</style>
+</head>
+<body>
+
+<h1>32 Bit Float Splitter</h1>
+<b><font color="red">This can ONLY be split a 32 BIT FLOAT into 2 UNSIGNED INTEGERS. Accuracy is +/- 0.0001. Acceptable Byte Orders are 1234, 2143, 3412 OR 4321  </font></b><br /><br />
+<div class="row">
+  <div class="column"><h2>Inputs</h2>
+	<b>Byte Order</b> <input type="number" id="Byte_Order" >
+	<br /><br />
+	<b>Floating Point</b> <input type="number" id="float_1" ><br /><br />
+	<button onclick="toFloat32()">Submit</button>
+  </div>
+  <div class="column">
+	<h2>Outputs</h2>
+	<p id="demo"></p>
+	<br />
+	<!--<b>Byte Order - 1234</b><br />-->
+	<b>First Word: </b><p id = "test0">&nbsp; </p>
+	<b>Second Word: </b><p id = "test1">&nbsp; </p>
+	
+	
+	<!--<b>Byte Order - 3412</b><br />
+	<b>High Word: </b><p id = "test3">&nbsp; </p>
+	<b>Low Word: </b><p id = "test2">&nbsp; </p>
+
+	<b>Byte Order - 2143</b><br />
+	<b>High Word: </b><p id = "test4">&nbsp; </p>
+	<b>Low Word: </b><p id = "test5">&nbsp; </p>
+
+	<b>Byte Order - 4321</b><br />
+	<b>High Word: </b><p id = "test7">&nbsp; </p>
+	<b>Low Word: </b><p id = "test6">&nbsp; </p>-->
+  </div>
+ </div>
+
+<script>
+/*function myFunction() {
+  return Math.PI;
+}
+
+document.getElementById("demo").innerHTML = myFunction();*/
+
+
+function toFloat32() {
+	var byteorder = document.getElementById("Byte_Order").value;
+	var value = document.getElementById("float_1").value;
+	//var value = 32.223;
+    var buffer = new ArrayBuffer(4);
+	var buffer1 = new Array(4);
+	var bytes = new Uint8Array(buffer);
+    switch (value) {
+        case Number.POSITIVE_INFINITY: bytes = 0x7F800000; break;
+        case Number.NEGATIVE_INFINITY: bytes = 0xFF800000; break;
+        case +0.0: bytes = 0x40000000; break;
+        case -0.0: bytes = 0xC0000000; break;
+        default:
+           if (Number.isNaN(value)) { bytes = 0x7FC00000; break; }
+
+            if (value <= -0.0) {
+                bytes = 0x80000000;
+                value = -value;
+            }
+
+            var exponent = Math.floor(Math.log(value) / Math.log(2));
+            var significand = ((value / Math.pow(2, exponent)) * 0x00800000) | 0;
+
+            exponent += 127;
+            if (exponent >= 0xFF) {
+                exponent = 0xFF;
+                significand = 0;
+            } else if (exponent < 0) exponent = 0;
+
+            bytes = bytes | (exponent << 23);
+            bytes = bytes | (significand & ~(-1 << 23));
+        break;
+    }
+    //return bytes;
+	var high16 = bytes >>> 16;
+	var low16 = bytes & 0xFFFF;
+
+	buffer01 = (high16 >> 8) & 0xff;
+	buffer02 = high16 & 0xff;
+	buffer03 = (low16 >> 8) & 0xff;
+	buffer04 = low16 & 0xff;
+	
+	
+/*	buffer1[0] = (high16 >> 8) & 0xff;
+	buffer1[1] = high16 & 0xff;
+	buffer1[2] = (low16 >> 8) & 0xff;
+	buffer1[3] = low16 & 0xff;*/
+	
+	high161 = (buffer02<<8) | buffer01;
+	low161 = (buffer04<<8) | buffer03;
+	
+	
+	if (byteorder == 4321) {
+		document.getElementById("test0").innerHTML = high16;
+		document.getElementById("test1").innerHTML = low16;
+	}
+	if (byteorder == 2143) {
+		document.getElementById("test0").innerHTML = low16;
+		document.getElementById("test1").innerHTML = high16;
+	}
+	if (byteorder == 3412) {
+		document.getElementById("test0").innerHTML = high161;
+		document.getElementById("test1").innerHTML = low161;
+	}
+	if (byteorder == 1234) {
+		document.getElementById("test0").innerHTML = low161;
+		document.getElementById("test1").innerHTML = high161;
+	}
+	
+}
+
+
+</script>
+<br /><br />
+<div class="banner"><div class="banner-contents"><a href="IEEEFloatConstructor.html">Construct Float</a> &nbsp;&nbsp;|&nbsp;&nbsp; <a href="IEEEFloatSplitter.html">Split Float</a></div></div>
+<br /><br />
+Designed By <a href="https://github.com/OptiForge/WebFloatConstructor">OptiForge</a> </body>
+</html>

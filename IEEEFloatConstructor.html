@@ -1,0 +1,149 @@
+<html>
+<head>
+<style>
+body {
+	font-family:Verdana,sans-serif;font-size:12px;
+	text-align:center;
+	background-color: #3b3b3b;
+	color:#f4f4f4;
+	width:600px;
+	margin-left:auto;
+	margin-right:auto;
+	}
+.row {
+  display: flex;
+}
+
+.column {
+  flex: 50%;
+}
+
+a:link {
+    text-decoration: none;
+	color:#f4f4f4;
+}
+
+a:visited {
+    text-decoration: none;
+	color:#f4f4f4;
+}
+
+a:hover {
+    text-decoration: underline;
+	color:#f4f4f4;
+}
+
+a:active {
+    text-decoration: underline;
+	color:#f4f4f4;
+}
+.banner {
+	height:30px;
+	width:100%;
+	position: relative;
+	background: -moz-linear-gradient(270deg, rgba(46,46,46,1) 0%, rgba(117,117,117,1) 100%); /* ff3.6+ */
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, rgba(46,46,46,1)), color-stop(100%, rgba(117,117,117,1))); /* safari4+,chrome */
+	background: -webkit-linear-gradient(270deg, rgba(46,46,46,1) 0%, rgba(117,117,117,1) 100%); /* safari5.1+,chrome10+ */
+	background: -o-linear-gradient(270deg, rgba(46,46,46,1) 0%, rgba(117,117,117,1) 100%); /* opera 11.10+ */
+	background: -ms-linear-gradient(270deg, rgba(46,46,46,1) 0%, rgba(117,117,117,1) 100%); /* ie10+ */
+	background: linear-gradient(180deg, rgba(46,46,46,1) 0%, rgba(117,117,117,1) 100%); /* w3c */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#2E2E2E', endColorstr='#757575',GradientType=0 ); /* ie6-9 */
+	}
+.banner-contents {
+	position: absolute;
+    top: 27%;
+	text-align:center;
+	width:100%;
+	height:100%;
+	}
+</style>
+</head>
+<body>
+<h1>32 Bit Float Constructor</h1>
+<b><font color="red">This can ONLY be used for SIGNED/UNSIGNED INTEGERS to generate a 32-bit integrator.</font></b><br /><br />
+<div class="row">
+  <div class="column"><h2>Inputs</h2>
+<b>Word Input 1</b>
+<br />
+<input type="number" id="Integer_1" >
+<br /><br />
+<b>Word Input 2</b>
+<br />
+<input type="number" id="Integer_2" >
+<br /><br />
+<b>Byte Order</b>
+<br />
+<input type="number" id="Byte_Order" >
+<br /><br />
+<button onclick="myFunction()">Submit</button>
+<br /><br />
+</div>
+<div class="column">
+<h2>Outputs</h2>
+<b>Byte1: </b><p id = "test0">&nbsp; </p>
+<b>Byte2: </b><p id = "test1">&nbsp; </p>
+<b>Byte3: </b><p id = "test2">&nbsp; </p>
+<b>Byte4: </b><p id = "test3">&nbsp; </p>
+<b>32-Bit Float: </b><p id = "test4"> </p>
+<script>
+function myFunction() {
+	/* Initialise Variables */
+	var buffer = new ArrayBuffer(4);
+	var bytes = new Uint8Array(buffer);
+	
+	/* Handle User Input */
+	var integer = document.getElementById("Integer_1").value;
+	var integer2 = document.getElementById("Integer_2").value;
+	var byteorder1 = document.getElementById("Byte_Order").value;
+	
+	/* SPlit based on Byte Order */
+	if (byteorder1 == 4321) {
+	bytes[0] = (integer >> 8) & 0xff;
+	bytes[1] = integer & 0xff;
+	bytes[2] = (integer2 >> 8) & 0xff;
+	bytes[3] = integer2 & 0xff;
+	} 
+	if (byteorder1 == 1234){
+	bytes[3] = (integer >> 8) & 0xff;
+	bytes[2] = integer & 0xff;
+	bytes[1] = (integer2 >> 8) & 0xff;
+	bytes[0] = integer2 & 0xff;
+	}
+	
+	if (byteorder1 == 3412){
+	bytes[1] = (integer >> 8) & 0xff;
+	bytes[0] = integer & 0xff;
+	bytes[3] = (integer2 >> 8) & 0xff;
+	bytes[2] = integer2 & 0xff;
+	}
+	if (byteorder1 == 2143){
+	bytes[2] = (integer >> 8) & 0xff;
+	bytes[3] = integer & 0xff;
+	bytes[0] = (integer2 >> 8) & 0xff;
+	bytes[1] = integer2 & 0xff;
+	}
+	
+	//Display Individual Bytes
+	document.getElementById("test0").innerHTML = bytes[0];
+	document.getElementById("test1").innerHTML = bytes[1];
+	document.getElementById("test2").innerHTML = bytes[2];
+	document.getElementById("test3").innerHTML = bytes[3];
+	
+	var view = new DataView(buffer);
+
+	//Display Output
+	document.getElementById("test4").innerHTML = view.getFloat32(0, false);
+	
+	}
+	
+	
+
+</script>
+</div>
+</div>
+<br /><br />
+<div class="banner"><div class="banner-contents"><a href="IEEEFloatConstructor.html">Construct Float</a> &nbsp;&nbsp;|&nbsp;&nbsp; <a href="IEEEFloatSplitter.html">Split Float</a></div></div>
+<br /><br />
+Designed By <a href="https://github.com/OptiForge/WebFloatConstructor">OptiForge</a> 
+</body>
+</html>
